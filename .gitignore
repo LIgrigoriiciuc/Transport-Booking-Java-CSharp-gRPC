@@ -1,0 +1,17 @@
+# Java
+target/
+*.class
+*.jar
+
+# C#
+bin/
+obj/
+*.user
+.vs/
+
+# IntelliJ
+.idea/
+*.iml
+
+# Rider / VS
+*.suo
