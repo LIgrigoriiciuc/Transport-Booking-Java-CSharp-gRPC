@@ -1,0 +1,1 @@
+Minimal high-performance transport reservation system. Features a Java gRPC backend with C# desktop client, utilizing Bi-directional streaming for real-time reservation push updates and multi-threaded request handling.
