@@ -1,1 +1,1 @@
-Minimal high-performance transport reservation system. Features a Java gRPC backend with C# desktop client, utilizing Bi-directional streaming for real-time reservation push updates and multi-threaded request handling.
+gRPC/Protobuf client-server reservation system for a transport company. Java server with server-streaming push notifications on reservation changes; C# WPF desktop client. Multithreaded, minimal.
