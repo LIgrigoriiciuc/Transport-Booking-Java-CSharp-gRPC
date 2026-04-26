@@ -1,0 +1,56 @@
+package Service;
+
+
+import Domain.Office;
+import Domain.User;
+import Repository.Filter;
+import Repository.UserRepository;
+import org.mindrot.jbcrypt.BCrypt;
+
+import java.util.List;
+import java.util.Optional;
+
+public class AuthService extends GenericService<Long, User> {
+
+    private static final int BCRYPT_ROUNDS = 12;
+    private final OfficeService officeService;
+
+    public AuthService(UserRepository repository, OfficeService officeService) {
+        super(repository);
+        this.officeService = officeService;
+    }
+
+    public static String hashPassword(String plainPassword) {
+        return BCrypt.hashpw(plainPassword, BCrypt.gensalt(BCRYPT_ROUNDS));
+    }
+    public static boolean checkPassword(String plainPassword, String hashed) {
+        return BCrypt.checkpw(plainPassword, hashed);
+    }
+    public User login(String username, String password) {
+        if (username == null || username.isBlank() || password == null || password.isBlank()) {
+            throw new IllegalArgumentException("Username and password are required.");
+        }
+        Filter f = new Filter();
+        f.addFilter("username", username);
+        List<User> matches = repository.filter(f);
+        if (matches.isEmpty()) {
+            throw new RuntimeException("Incorrect credentials.");
+        }
+        User user = matches.get(0);
+        String stored = user.getPassword();
+        boolean valid;
+        if (stored.startsWith("$2a$") || stored.startsWith("$2b$") || stored.startsWith("$2y$")) {
+            valid = checkPassword(password, stored);
+        } else {
+            valid = stored.equals(password);
+            if (valid) {
+                user.setPassword(hashPassword(password));
+                repository.update(user);
+            }
+        }
+        if (!valid) {
+            throw new RuntimeException("Incorrect credentials.");
+        }
+        return user;
+    }
+}

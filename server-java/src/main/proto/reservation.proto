@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+option java_package = "Network.Proto";
+option java_outer_classname = "ReservationProto";
+option java_multiple_files = true;
+
+message Empty {}
+
+service ReservationService{
+  rpc Login(LoginPayload) returns (ProtoUser);
+  rpc Logout(LogoutPayload) returns (Empty);
+  rpc SearchTrips(SearchTripsPayload) returns (TripList);
+  rpc GetSeats(GetSeatsPayload) returns (SeatList);
+  rpc GetAllReservations(Empty) returns (ReservationList);
+  rpc MakeReservation(MakeReservationPayload) returns (Empty);
+  rpc CancelReservation(CancelReservationPayload) returns (Empty);
+  rpc SubscribeToPush(Empty) returns (stream PushPayload);
+}
+message PushPayload {
+  int64 updatedTripId = 1;
+  ReservationList reservations = 2;
+}
+message LoginPayload { 
+  string username = 1; 
+  string password = 2; }
+
+message ProtoUser {
+  int64 id = 1;
+  string fullName = 2;
+  string officeAddress = 3;
+}
+
+message LogoutPayload{ 
+  int64 userId = 1; }
+
+message SearchTripsPayload{ 
+  string destination = 1; 
+  string from = 2; 
+  string to = 3; }
+
+message ProtoTrip {
+  int64  id = 1;
+  string destination = 2;
+  string time = 3;
+  string busNumber = 4;
+  int32  freeSeats = 5;
+}
+message TripList { 
+  repeated ProtoTrip trips = 1; }
+
+message GetSeatsPayload { 
+  int64 tripId = 1; }
+
+message ProtoSeat {
+  int64 id = 1;
+  int32 number = 2;
+  bool  reserved = 3;
+  int64 tripId = 4;
+  int64 reservationId = 5;
+}
+message SeatList { 
+  repeated ProtoSeat seats = 1; }
+
+message MakeReservationPayload   
+{ 
+  string clientName = 1; 
+  repeated int64 seatIds = 2; 
+  int64 userId = 3; }
+
+message CancelReservationPayload {
+  int64 reservationId = 1; }
+
+message ProtoReservation {
+  int64 id = 1;
+  string clientName = 2;
+  string reservationTime = 3;
+  int64  tripId = 4;
+  repeated int32 seatNumbers = 5;
+  string userUsername = 6;
+}
+message ReservationList { 
+  repeated ProtoReservation reservations = 1; }
+
+//drop request and response messages entirely and use the service methods directly with the message types as parameters and return types.
+//each rpc method has its own typed input/output
