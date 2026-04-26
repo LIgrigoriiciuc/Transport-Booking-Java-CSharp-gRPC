@@ -57,12 +57,17 @@ public class ProtoUtils {
         return builder.build();
     }
 
-    public static ReservationList toReservationList(List<Reservation> reservations,
-                                                    List<List<Integer>> seatsPerRes, List<User> users, List<Long> tripIds) {
+    public static ReservationList toReservationList(List<ReservationDetail> details) {
         ReservationList.Builder builder = ReservationList.newBuilder();
-        for (int i = 0; i < reservations.size(); i++)
-            builder.addReservations(toProto(reservations.get(i),
-                    seatsPerRes.get(i), users.get(i), tripIds.get(i)));
+        for (ReservationDetail d : details)
+            builder.addReservations(ProtoReservation.newBuilder()
+                    .setId(d.id())
+                    .setClientName(d.clientName())
+                    .setReservationTime(d.reservationTime())
+                    .setTripId(d.tripId())
+                    .setUserUsername(d.userUsername())
+                    .addAllSeatNumbers(d.seatNumbers())
+                    .build());
         return builder.build();
     }
 }

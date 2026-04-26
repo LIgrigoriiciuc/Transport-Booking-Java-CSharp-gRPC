@@ -1,9 +1,16 @@
+// Shared contract — keep both copies in sync manually.
+// Java:   server-java/src/main/proto/reservation.proto
+// CSharp: client-csharp/Proto/reservation.proto
+
 syntax = "proto3";
 
 option java_package = "Network.Proto";
 option java_outer_classname = "ReservationProto";
 option java_multiple_files = true;
 
+option csharp_namespace = "Network.Proto";
+
+//every RPC method in protobuf must return something
 message Empty {}
 
 service ReservationService{
@@ -14,8 +21,12 @@ service ReservationService{
   rpc GetAllReservations(Empty) returns (ReservationList);
   rpc MakeReservation(MakeReservationPayload) returns (Empty);
   rpc CancelReservation(CancelReservationPayload) returns (Empty);
-  rpc SubscribeToPush(Empty) returns (stream PushPayload);
+  rpc SubscribeToPush(UserId) returns (stream PushPayload);
 }
+
+message UserId {
+  int64 userId = 1; }
+
 message PushPayload {
   int64 updatedTripId = 1;
   ReservationList reservations = 2;

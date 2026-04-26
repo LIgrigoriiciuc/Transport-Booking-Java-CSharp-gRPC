@@ -66,7 +66,7 @@ public class FacadeService {
         return officeService.findById(id).orElse(null);
     }
     public int countFreeSeats(Long tripId) {
-        return seatService.getFreeByTripId(tripId).size();
+        return seatService.getFreeByTripId(tripId);
     }
     public Seat getSeatById(Long seatId) {
         return seatService.findById(seatId).orElse(null);
@@ -83,6 +83,9 @@ public class FacadeService {
     }
     public Long getTripIdByReservation(Long reservationId) {
         return seatService.getTripIdByReservationId(reservationId).orElse(0L); // not null
+    }
+    public List<ReservationDetail> getAllReservationDetails() {
+        return reservationService.getAllWithDetails();
     }
 
 }

@@ -6,19 +6,12 @@ import java.time.format.DateTimeFormatterBuilder;
 
 public class DateTimeUtils {
     public static final DateTimeFormatter FORMATTER =
-            new DateTimeFormatterBuilder()
-                    .appendPattern("yyyy-MM-dd HH:mm")
-                    .optionalStart()
-                    .appendPattern(":ss")
-                    .optionalEnd()
-                    .toFormatter();
+            DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+
     public static String format(LocalDateTime dt) {
         return dt != null ? dt.format(FORMATTER) : "";
     }
-
     public static LocalDateTime parse(String dt) {
-        if (dt == null || dt.isBlank()) return null;
-        // normalize ISO format just in case
-        return LocalDateTime.parse(dt.replace("T", " "), FORMATTER);
+        return dt != null ? LocalDateTime.parse(dt, FORMATTER) : null;
     }
 }

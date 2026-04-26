@@ -1,6 +1,7 @@
-package Repository;
+package Repository.Interfaces;
 
 import Domain.Entity;
+import Repository.Filter;
 
 import java.util.List;
 import java.util.Optional;

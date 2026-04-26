@@ -1,23 +1,17 @@
 package Service;
-
-
-import Domain.Office;
 import Domain.User;
 import Repository.Filter;
 import Repository.UserRepository;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.List;
-import java.util.Optional;
 
 public class AuthService extends GenericService<Long, User> {
 
     private static final int BCRYPT_ROUNDS = 12;
-    private final OfficeService officeService;
 
-    public AuthService(UserRepository repository, OfficeService officeService) {
+    public AuthService(UserRepository repository) {
         super(repository);
-        this.officeService = officeService;
     }
 
     public static String hashPassword(String plainPassword) {

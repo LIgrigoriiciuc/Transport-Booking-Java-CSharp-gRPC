@@ -2,19 +2,23 @@ package Service;
 
 
 import Domain.Reservation;
+import Domain.ReservationDetail;
 import Domain.Seat;
+import Repository.Interfaces.IReservationRepository;
 import Repository.ReservationRepository;
 
+import javax.imageio.event.IIOReadProgressListener;
 import java.util.List;
 
 public class ReservationService extends GenericService<Long, Reservation> {
 
     private final SeatService seatService;
-
+    private final IReservationRepository reservationRepository;
     public ReservationService(ReservationRepository reservationRepository,
                               SeatService seatService) {
         super(reservationRepository);
         this.seatService = seatService;
+        this.reservationRepository = reservationRepository;
     }
 
     public void reserveSeats(String clientName, List<Seat> chosenSeats, Long userId) {
@@ -39,6 +43,9 @@ public class ReservationService extends GenericService<Long, Reservation> {
             seatService.update(seat);
         }
         repository.remove(reservationId);
+    }
+    public List<ReservationDetail> getAllWithDetails() {
+        return reservationRepository.findAllWithDetails();
     }
 
 

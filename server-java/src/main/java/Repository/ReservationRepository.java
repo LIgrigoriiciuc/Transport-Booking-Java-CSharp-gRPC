@@ -2,14 +2,21 @@ package Repository;
 
 
 import Domain.Reservation;
+import Domain.ReservationDetail;
+import Repository.Interfaces.IReservationRepository;
+import Util.ConnectionHolder;
+import Util.DatabaseConnection;
 import Util.DateTimeUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-public class ReservationRepository extends GenericRepository<Long, Reservation> {
+public class ReservationRepository extends GenericRepository<Long, Reservation> implements IReservationRepository {
 
     @Override
     public String getTableName() { return "reservations"; }
@@ -51,5 +58,40 @@ public class ReservationRepository extends GenericRepository<Long, Reservation> 
     @Override
     protected Long extractGeneratedId(ResultSet keys) throws SQLException {
         return keys.getLong(1);
+    }
+    //fix N+1 query issue
+    @Override
+    public List<ReservationDetail> findAllWithDetails() {
+        String sql = """
+        SELECT r.id, r.client_name, r.reservation_time,
+               u.username,
+               s.trip_id,
+               GROUP_CONCAT(s.number ORDER BY s.number) AS seat_numbers
+        FROM reservations r
+        JOIN users u ON u.id = r.user_id
+        JOIN seats s ON s.reservation_id = r.id
+        GROUP BY r.id, r.client_name, r.reservation_time, u.username, s.trip_id
+        """;
+        List<ReservationDetail> results = new ArrayList<>();
+        try (ConnectionHolder holder = DatabaseConnection.getConnection();
+             PreparedStatement ps = holder.get().prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                List<Integer> seats = Arrays.stream(rs.getString("seat_numbers").split(","))
+                        .map(Integer::parseInt)
+                        .toList();
+                results.add(new ReservationDetail(
+                        rs.getLong("id"),
+                        rs.getString("client_name"),
+                        rs.getString("reservation_time"),
+                        rs.getString("username"),
+                        rs.getLong("trip_id"),
+                        seats
+                ));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching reservation details", e);
+        }
+        return results;
     }
 }

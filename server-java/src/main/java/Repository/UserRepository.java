@@ -15,7 +15,7 @@ public class UserRepository extends GenericRepository<Long, User> {
 
     @Override
     protected String buildInsertSql() {
-        return "INSERT INTO users (username, password, fullName) VALUES (?, ?, ?)";
+        return "INSERT INTO users (username, password, fullName, officeId) VALUES (?, ?, ?, ?)";
     }
 
     @Override
@@ -23,11 +23,12 @@ public class UserRepository extends GenericRepository<Long, User> {
         ps.setString(1, user.getUsername());
         ps.setString(2, user.getPassword());
         ps.setString(3, user.getFullName());
-        }
+        ps.setLong(4, user.getOfficeId());
+    }
 
     @Override
     protected String buildUpdateSql() {
-        return "UPDATE users SET username = ?, password = ?, fullName = ? WHERE id = ?";
+        return "UPDATE users SET username = ?, password = ?, fullName = ?, officeId = ? WHERE id = ?";
     }
 
     @Override
@@ -35,8 +36,9 @@ public class UserRepository extends GenericRepository<Long, User> {
         ps.setString(1, user.getUsername());
         ps.setString(2, user.getPassword());
         ps.setString(3, user.getFullName());
-        ps.setLong(4, user.getId());
-        }
+        ps.setLong(4, user.getOfficeId());
+        ps.setLong(5, user.getId());
+    }
 
     @Override
     protected User mapResultSetToEntity(ResultSet rs) throws SQLException {

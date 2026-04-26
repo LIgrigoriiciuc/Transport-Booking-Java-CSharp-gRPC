@@ -2,6 +2,7 @@ package Repository;
 
 
 import Domain.Entity;
+import Repository.Interfaces.IRepository;
 import Util.ConnectionHolder;
 import Util.DatabaseConnection;
 

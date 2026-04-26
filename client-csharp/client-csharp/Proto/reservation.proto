@@ -1,3 +1,7 @@
+// Shared contract — keep both copies in sync manually.
+// Java:   server-java/src/main/proto/reservation.proto
+// CSharp: client-csharp/Proto/reservation.proto
+
 syntax = "proto3";
 
 option java_package = "Network.Proto";
@@ -6,6 +10,7 @@ option java_multiple_files = true;
 
 option csharp_namespace = "Network.Proto";
 
+//every RPC method in protobuf must return something
 message Empty {}
 
 service ReservationService{
@@ -16,14 +21,18 @@ service ReservationService{
   rpc GetAllReservations(Empty) returns (ReservationList);
   rpc MakeReservation(MakeReservationPayload) returns (Empty);
   rpc CancelReservation(CancelReservationPayload) returns (Empty);
-  rpc SubscribeToPush(Empty) returns (stream PushPayload);
+  rpc SubscribeToPush(UserId) returns (stream PushPayload);
 }
+
+message UserId {
+  int64 userId = 1; }
+
 message PushPayload {
   int64 updatedTripId = 1;
   ReservationList reservations = 2;
 }
-message LoginPayload { 
-  string username = 1; 
+message LoginPayload {
+  string username = 1;
   string password = 2; }
 
 message ProtoUser {
@@ -32,12 +41,12 @@ message ProtoUser {
   string officeAddress = 3;
 }
 
-message LogoutPayload{ 
+message LogoutPayload{
   int64 userId = 1; }
 
-message SearchTripsPayload{ 
-  string destination = 1; 
-  string from = 2; 
+message SearchTripsPayload{
+  string destination = 1;
+  string from = 2;
   string to = 3; }
 
 message ProtoTrip {
@@ -47,10 +56,10 @@ message ProtoTrip {
   string busNumber = 4;
   int32  freeSeats = 5;
 }
-message TripList { 
+message TripList {
   repeated ProtoTrip trips = 1; }
 
-message GetSeatsPayload { 
+message GetSeatsPayload {
   int64 tripId = 1; }
 
 message ProtoSeat {
@@ -60,13 +69,13 @@ message ProtoSeat {
   int64 tripId = 4;
   int64 reservationId = 5;
 }
-message SeatList { 
+message SeatList {
   repeated ProtoSeat seats = 1; }
 
-message MakeReservationPayload   
-{ 
-  string clientName = 1; 
-  repeated int64 seatIds = 2; 
+message MakeReservationPayload
+{
+  string clientName = 1;
+  repeated int64 seatIds = 2;
   int64 userId = 3; }
 
 message CancelReservationPayload {
@@ -80,7 +89,7 @@ message ProtoReservation {
   repeated int32 seatNumbers = 5;
   string userUsername = 6;
 }
-message ReservationList { 
+message ReservationList {
   repeated ProtoReservation reservations = 1; }
 
 //drop request and response messages entirely and use the service methods directly with the message types as parameters and return types.
