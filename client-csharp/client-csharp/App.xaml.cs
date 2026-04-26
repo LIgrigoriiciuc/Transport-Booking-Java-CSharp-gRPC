@@ -11,17 +11,16 @@ public partial class App : Application
     private GrpcProxy _proxy;
     private AppNavigator _navigator;
 
+
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
         string host = LoadSetting("server.host", "localhost");
-        int    port = int.TryParse(LoadSetting("server.port", "65535"), out int p) ? p : 65535;
+        int port = int.TryParse(LoadSetting("server.port", "65535"), out int p) ? p : 65535;
 
         _proxy = new GrpcProxy(host, port);
-        try
-        {
-            _proxy.Connect();
-        }
+        try { _proxy.Connect(); }
         catch (Exception ex)
         {
             MessageBox.Show($"Cannot connect to server: {ex.Message}");
