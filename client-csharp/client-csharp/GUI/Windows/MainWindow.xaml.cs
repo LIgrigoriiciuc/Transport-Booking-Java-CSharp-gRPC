@@ -8,6 +8,7 @@ using Network.Proto;
 namespace Client.GUI.Windows;
 
 
+
 public partial class MainWindow : Window, IReservationObserver
 {
     private readonly GrpcProxy _proxy;
@@ -32,7 +33,6 @@ public partial class MainWindow : Window, IReservationObserver
                 DrawSeats(trip.Id);
             }
         };
-
         RefreshTrips();
         RefreshReservations();
     }
@@ -42,12 +42,17 @@ public partial class MainWindow : Window, IReservationObserver
         {
             RefreshReservations(push.Reservations);
             if (_selectedTrip != null && _selectedTrip.Id == push.UpdatedTripId)
-                DrawSeats(_selectedTrip.Id); // re-request seats only if viewing this trip
+            {
+                // redraw keeping whatever selection is still valid
+                DrawSeats(_selectedTrip.Id, keepSelection: true);
+            }
         });
     }
     private void ResetButton_Click(object sender, RoutedEventArgs e)
     {
-        DestFilter.Clear(); StartTimeField.Clear(); EndTimeField.Clear();
+        DestFilter.Clear(); 
+        StartTimeField.Clear(); 
+        EndTimeField.Clear();
         RefreshTrips();
     }
     private void TripTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -55,10 +60,9 @@ public partial class MainWindow : Window, IReservationObserver
         if (TripTable.SelectedItem is ProtoTrip trip)
         {
             _selectedTrip = trip;
-            DrawSeats(trip.Id);
+            DrawSeats(trip.Id, keepSelection: false);
         }
     }
-
     private void LogoutButton_Click(object sender, RoutedEventArgs e)
     {
         _proxy.Observer = null;
@@ -68,17 +72,19 @@ public partial class MainWindow : Window, IReservationObserver
 
     private void ReserveButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_selectedTrip == null)  { ShowError("Select a trip first.");       return; }
-        if (!_selectedSeats.Any())  { ShowError("Select at least one seat.");  return; }
+        if (_selectedTrip == null)  
+        { ShowError("Select a trip first.");       
+            return; }
+        if (!_selectedSeats.Any())  
+        { ShowError("Select at least one seat.");  
+            return; }
         string name = ClientNameField.Text.Trim();
-        if (string.IsNullOrWhiteSpace(name)) { ShowError("Enter client name."); return; }
-
+        if (string.IsNullOrWhiteSpace(name)) { ShowError("Enter client name."); 
+            return; }
         try
         {
             _proxy.MakeReservation(name, _selectedSeats.Select(s => s.Id).ToList(), _currentUser.Id);
             ClientNameField.Clear();
-            DrawSeats(_selectedTrip.Id);
-            RefreshReservations();
         }
         catch (Exception ex) { ShowError(ex.Message); }
     }
@@ -93,8 +99,6 @@ public partial class MainWindow : Window, IReservationObserver
         try
         {
             _proxy.CancelReservation(selected.Id);
-            RefreshReservations();
-            if (_selectedTrip != null) DrawSeats(_selectedTrip.Id);
         }
         catch (Exception ex) { ShowError(ex.Message); }
     }
@@ -102,20 +106,25 @@ public partial class MainWindow : Window, IReservationObserver
     {
         try
         {
-            var trips = _proxy.SearchTrips(
-                DestFilter.Text, StartTimeField.Text, EndTimeField.Text);
+            var trips = _proxy.SearchTrips(DestFilter.Text, StartTimeField.Text, EndTimeField.Text);
             TripTable.ItemsSource = trips.Trips;
         }
         catch { ShowError("Dates must be: yyyy-MM-dd HH:mm"); }
     }
-    private void DrawSeats(long tripId)
+    private void DrawSeats(long tripId, bool keepSelection = false)
     {
         SeatGrid.Children.Clear();
         SeatGrid.RowDefinitions.Clear();
-        _selectedSeats.Clear();
-
         var seats = _proxy.GetSeats(tripId).Seats.OrderBy(s => s.Number).ToList();
-        int cols  = 4;
+        if (!keepSelection)
+            _selectedSeats.Clear();
+        else
+            // drop any selected seats that are now reserved
+            _selectedSeats = _selectedSeats
+                .Where(s => seats.Any(ns => ns.Id == s.Id && !ns.Reserved))
+                .ToList();
+
+        int cols  = 3;
         int rows  = (int)Math.Ceiling(seats.Count / (double)cols);
 
         for (int r = 0; r < rows; r++)
@@ -138,6 +147,9 @@ public partial class MainWindow : Window, IReservationObserver
             }
             else
             {
+                //restore highlight if still selected
+                if (_selectedSeats.Any(s => s.Id == seat.Id))
+                    btn.Background = Brushes.Gray;
                 var captured = seat;
                 btn.Click += (_, _) => ToggleSeat(btn, captured);
             }
@@ -171,14 +183,12 @@ public partial class MainWindow : Window, IReservationObserver
     {
         ResList.ItemsSource = _proxy.GetAllReservations().Reservations;
     }
-
+    //from push
     private void RefreshReservations(ReservationList list)
     {
-        ResList.ItemsSource = list.Reservations; // from push — no extra request
+        ResList.ItemsSource = list.Reservations;
     }
 
     private void ShowError(string msg) =>
         MessageBox.Show(msg, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 }
-
-

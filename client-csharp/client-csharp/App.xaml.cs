@@ -1,17 +1,14 @@
-﻿
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using Client.GUI;
 using Client.Network;
-
 namespace Client;
 
 public partial class App : Application
 {
     private GrpcProxy _proxy;
     private AppNavigator _navigator;
-
-
+    
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -27,7 +24,6 @@ public partial class App : Application
             Shutdown();
             return;
         }
-
         _navigator = new AppNavigator(_proxy);
         _navigator.ShowLogin();
     }
