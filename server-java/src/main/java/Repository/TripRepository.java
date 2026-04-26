@@ -23,7 +23,7 @@ public class TripRepository extends GenericRepository<Long, Trip> {
         ps.setString(1, trip.getDestination());
         ps.setString(2, DateTimeUtils.format(trip.getTime()));
         ps.setString(3, trip.getBusNumber());
-        }
+    }
 
     @Override
     protected String buildUpdateSql() {
@@ -36,7 +36,7 @@ public class TripRepository extends GenericRepository<Long, Trip> {
         ps.setString(2, DateTimeUtils.format(trip.getTime()));
         ps.setString(3, trip.getBusNumber());
         ps.setLong(4, trip.getId());
-        }
+    }
 
     @Override
     protected Trip mapResultSetToEntity(ResultSet rs) throws SQLException {

@@ -65,11 +65,11 @@ INSERT INTO trips (destination, time, busNumber) VALUES
                                                      ('Bristol',    '2026-06-14 08:45', 'BR-07-GGG'),
                                                      ('Leeds',      '2026-06-15 11:00', 'LD-08-HHH');
 INSERT INTO reservations (clientName, userId, reservationTime) VALUES
-                                                                   ('George Stamper', 1, '2026-06-01T10:00:00'),
-                                                                   ('Ellen Brown',    1, '2026-06-02T11:30:00'),
-                                                                   ('Michael Ross',   1, '2026-06-03T09:15:00'),
-                                                                   ('Anne Cook',      1, '2026-06-04T14:00:00'),
-                                                                   ('Ray Flowers',    1, '2026-06-05T16:45:00');
+                                                                   ('George Stamper', 1, '2026-06-01 10:00'),
+                                                                   ('Ellen Brown',    1, '2026-06-02 11:30'),
+                                                                   ('Michael Ross',   1, '2026-06-03 09:15'),
+                                                                   ('Anne Cook',      1, '2026-06-04 14:00'),
+                                                                   ('Ray Flowers',    1, '2026-06-05 16:45');
 
 INSERT INTO seats (number, isReserved, trip_id, reservation_id) VALUES
                                                                     (1,0,1,NULL),(2,0,1,NULL),(3,0,1,NULL),(4,0,1,NULL),(5,0,1,NULL),(6,0,1,NULL),

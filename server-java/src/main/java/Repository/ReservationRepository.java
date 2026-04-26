@@ -31,7 +31,7 @@ public class ReservationRepository extends GenericRepository<Long, Reservation> 
         ps.setString(1, reservation.getClientName());
         ps.setLong(2, reservation.getUserId());
         ps.setString(3, DateTimeUtils.format(reservation.getReservationTime()));
-        }
+    }
 
     @Override
     protected String buildUpdateSql() {
@@ -44,7 +44,7 @@ public class ReservationRepository extends GenericRepository<Long, Reservation> 
         ps.setLong(2, reservation.getUserId());
         ps.setString(3, DateTimeUtils.format(reservation.getReservationTime()));
         ps.setLong(4, reservation.getId());
-        }
+    }
 
     @Override
     protected Reservation mapResultSetToEntity(ResultSet rs) throws SQLException {
@@ -63,15 +63,15 @@ public class ReservationRepository extends GenericRepository<Long, Reservation> 
     @Override
     public List<ReservationDetail> findAllWithDetails() {
         String sql = """
-        SELECT r.id, r.client_name, r.reservation_time,
-               u.username,
-               s.trip_id,
-               GROUP_CONCAT(s.number ORDER BY s.number) AS seat_numbers
-        FROM reservations r
-        JOIN users u ON u.id = r.user_id
-        JOIN seats s ON s.reservation_id = r.id
-        GROUP BY r.id, r.client_name, r.reservation_time, u.username, s.trip_id
-        """;
+    SELECT r.id, r.clientName, r.reservationTime,
+           u.username,
+           s.trip_id,
+           GROUP_CONCAT(s.number) AS seat_numbers
+    FROM reservations r
+    JOIN users u ON u.id = r.userId
+    JOIN seats s ON s.reservation_id = r.id
+    GROUP BY r.id, r.clientName, r.reservationTime, u.username, s.trip_id
+    """;
         List<ReservationDetail> results = new ArrayList<>();
         try (ConnectionHolder holder = DatabaseConnection.getConnection();
              PreparedStatement ps = holder.get().prepareStatement(sql);
@@ -82,8 +82,8 @@ public class ReservationRepository extends GenericRepository<Long, Reservation> 
                         .toList();
                 results.add(new ReservationDetail(
                         rs.getLong("id"),
-                        rs.getString("client_name"),
-                        rs.getString("reservation_time"),
+                        rs.getString("clientName"),
+                        rs.getString("reservationTime"),
                         rs.getString("username"),
                         rs.getLong("trip_id"),
                         seats
