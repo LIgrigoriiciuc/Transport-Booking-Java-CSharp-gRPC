@@ -82,7 +82,7 @@ public class FacadeService {
         return seatService.getSeatNumbersByReservation(reservationId);
     }
     public Long getTripIdByReservation(Long reservationId) {
-        return seatService.getTripIdByReservationId(reservationId).orElse(null);
+        return seatService.getTripIdByReservationId(reservationId).orElse(0L); // not null
     }
 
 }

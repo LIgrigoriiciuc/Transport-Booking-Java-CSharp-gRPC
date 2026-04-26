@@ -12,6 +12,7 @@ import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -23,6 +24,7 @@ public class NetworkGrpcServiceImpl extends ReservationServiceGrpc.ReservationSe
     private final FacadeService facade;
     private final Object loginLock = new Object();
     private final Object reservationLock = new Object();
+    private final Set<Long> loggedInUsers = ConcurrentHashMap.newKeySet();
     // active push streams — one per connected client
     private final CopyOnWriteArrayList<StreamObserver<PushPayload>> subscribers = new CopyOnWriteArrayList<>();
     public NetworkGrpcServiceImpl(FacadeService facade) {
@@ -31,25 +33,26 @@ public class NetworkGrpcServiceImpl extends ReservationServiceGrpc.ReservationSe
 
     @Override
     public void login(LoginPayload request, StreamObserver<ProtoUser> responseObserver) {
-        try{
+        try {
             synchronized (loginLock) {
                 User user = facade.login(request.getUsername(), request.getPassword());
                 if (user == null)
                     throw new RuntimeException("Authentication failed.");
+                if (!loggedInUsers.add(user.getId()))          // add() returns false if already present
+                    throw new RuntimeException("User already logged in.");
                 Office office = facade.getOfficeById(user.getOfficeId());
                 responseObserver.onNext(ProtoUtils.toProto(user, office));
                 responseObserver.onCompleted();
             }
         } catch (Exception e) {
-            responseObserver.onError(Status.UNAUTHENTICATED.withDescription(e.getMessage()).asRuntimeException());
+            responseObserver.onError(
+                    Status.UNAUTHENTICATED.withDescription(e.getMessage()).asRuntimeException());
         }
     }
 
     @Override
-    public void logout(LogoutPayload request,
-                       StreamObserver<Empty> responseObserver) {
-        // nothing to do server-side beyond acknowledging
-        // session lifecycle handled by client disconnecting
+    public void logout(LogoutPayload request, StreamObserver<Empty> responseObserver) {
+        loggedInUsers.remove(request.getUserId());   // ← release the slot
         responseObserver.onNext(Empty.getDefaultInstance());
         responseObserver.onCompleted();
     }

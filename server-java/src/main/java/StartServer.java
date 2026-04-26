@@ -20,8 +20,8 @@ public class StartServer {
         int port = loadPort();
         SeatRepository seatRepo = new SeatRepository();
         TripRepository tripRepo = new TripRepository();
-        ReservationRepository resRepo    = new ReservationRepository();
-        UserRepository userRepo   = new UserRepository();
+        ReservationRepository resRepo = new ReservationRepository();
+        UserRepository userRepo = new UserRepository();
         OfficeRepository officeRepo = new OfficeRepository();
         OfficeService officeService = new OfficeService(officeRepo);
         AuthService authService = new AuthService(userRepo, officeService);

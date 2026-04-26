@@ -2,6 +2,7 @@ package Repository;
 
 
 import Domain.Reservation;
+import Util.DateTimeUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,7 +23,7 @@ public class ReservationRepository extends GenericRepository<Long, Reservation> 
     protected void setInsertParameters(PreparedStatement ps, Reservation reservation) throws SQLException {
         ps.setString(1, reservation.getClientName());
         ps.setLong(2, reservation.getUserId());
-        ps.setString(3, reservation.getReservationTime().toString());
+        ps.setString(3, DateTimeUtils.format(reservation.getReservationTime()));
         }
 
     @Override
@@ -34,7 +35,7 @@ public class ReservationRepository extends GenericRepository<Long, Reservation> 
     protected void setUpdateParameters(PreparedStatement ps, Reservation reservation) throws SQLException {
         ps.setString(1, reservation.getClientName());
         ps.setLong(2, reservation.getUserId());
-        ps.setString(3, reservation.getReservationTime().toString());
+        ps.setString(3, DateTimeUtils.format(reservation.getReservationTime()));
         ps.setLong(4, reservation.getId());
         }
 
@@ -43,7 +44,7 @@ public class ReservationRepository extends GenericRepository<Long, Reservation> 
         long id = rs.getLong("id");
         String clientName = rs.getString("clientName");
         long userId = rs.getLong("userId");
-        LocalDateTime reservationTime = LocalDateTime.parse(rs.getString("reservationTime"));
+        LocalDateTime reservationTime = DateTimeUtils.parse(rs.getString("reservationTime"));
         Reservation reservation = new Reservation(id, clientName, userId, reservationTime);
         return reservation;
     }

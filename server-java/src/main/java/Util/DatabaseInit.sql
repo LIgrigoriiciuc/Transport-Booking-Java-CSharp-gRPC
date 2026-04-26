@@ -1,3 +1,9 @@
+DROP TABLE IF EXISTS seats;
+DROP TABLE IF EXISTS reservations;
+DROP TABLE IF EXISTS trips;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS offices;
+
 CREATE TABLE IF NOT EXISTS offices (
                                        id      INTEGER PRIMARY KEY AUTOINCREMENT,
                                        address TEXT    NOT NULL
@@ -48,17 +54,16 @@ INSERT INTO users (username, password, fullName, officeId) VALUES
                                                                ('mary',   'pass456',  'Mary Smith', 3),
                                                                ('andrew', 'pass789',  'Andrew Jones', 4);
 
+
 INSERT INTO trips (destination, time, busNumber) VALUES
-                                                     ('London',     '2026-06-10T08:00:00', 'LN-01-AAA'),
-                                                     ('London',     '2026-06-10T14:30:00', 'LN-02-BBB'),
-                                                     ('Manchester', '2026-06-11T07:00:00', 'MN-03-CCC'),
-                                                     ('Manchester', '2026-06-12T09:15:00', 'MN-04-DDD'),
-                                                     ('Birmingham', '2026-06-11T10:00:00', 'BM-05-EEE'),
-                                                     ('Liverpool',  '2026-06-13T06:30:00', 'LV-06-FFF'),
-                                                     ('Bristol',    '2026-06-14T08:45:00', 'BR-07-GGG'),
-                                                     ('Leeds',      '2026-06-15T11:00:00', 'LD-08-HHH');
-
-
+                                                     ('London',     '2026-06-10 08:00', 'LN-01-AAA'),
+                                                     ('London',     '2026-06-10 14:30', 'LN-02-BBB'),
+                                                     ('Manchester', '2026-06-11 07:00', 'MN-03-CCC'),
+                                                     ('Manchester', '2026-06-12 09:15', 'MN-04-DDD'),
+                                                     ('Birmingham', '2026-06-11 10:00', 'BM-05-EEE'),
+                                                     ('Liverpool',  '2026-06-13 06:30', 'LV-06-FFF'),
+                                                     ('Bristol',    '2026-06-14 08:45', 'BR-07-GGG'),
+                                                     ('Leeds',      '2026-06-15 11:00', 'LD-08-HHH');
 INSERT INTO reservations (clientName, userId, reservationTime) VALUES
                                                                    ('George Stamper', 1, '2026-06-01T10:00:00'),
                                                                    ('Ellen Brown',    1, '2026-06-02T11:30:00'),
