@@ -1,0 +1,111 @@
+﻿<Window x:Class="Client.GUI.Windows.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Height="700" Width="1150"
+        WindowStartupLocation="CenterScreen">
+    <DockPanel Margin="10">
+
+        <!-- Top toolbar -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+            <Label Content="Destination:"/>
+            <TextBox x:Name="DestFilter" Width="120" Margin="0,0,8,0"/>
+            <Label Content="From:"/>
+            <TextBox x:Name="StartTimeField" Width="130" Margin="0,0,8,0"/>
+            <Label Content="To:"/>
+            <TextBox x:Name="EndTimeField" Width="130" Margin="0,0,8,0"/>
+            <Button Content="Filter" Width="60" Click="FilterButton_Click" Margin="0,0,4,0"/>
+            <Button Content="Reset"  Width="60" Click="ResetButton_Click"  Margin="0,0,20,0"/>
+            <Button Content="Logout" Width="70" Click="LogoutButton_Click"
+                    Background="#FFDDDD"/>
+        </StackPanel>
+
+        <!-- Main content: left = trips+seats, right = reservations -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- LEFT: trips + seat grid + reserve form -->
+            <DockPanel Grid.Column="0" Margin="0,0,10,0">
+
+                <!-- Trips table -->
+                <Label DockPanel.Dock="Top" Content="Trips" FontWeight="Bold"/>
+                <DataGrid x:Name="TripTable"
+                          DockPanel.Dock="Top"
+                          Height="220"
+                          AutoGenerateColumns="False"
+                          SelectionMode="Single"
+                          IsReadOnly="True"
+                          SelectionChanged="TripTable_SelectionChanged">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Destination" Binding="{Binding Destination}" Width="*"/>
+                        <DataGridTextColumn Header="Time"        Binding="{Binding Time}"        Width="130"/>
+                        <DataGridTextColumn Header="Bus"         Binding="{Binding BusNumber}"   Width="70"/>
+                        <DataGridTextColumn Header="Free"        Binding="{Binding FreeSeats}"   Width="50"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <!-- Seat grid -->
+                <Label DockPanel.Dock="Top" Content="Seats" FontWeight="Bold" Margin="0,10,0,0"/>
+                <ScrollViewer DockPanel.Dock="Top" Height="200" VerticalScrollBarVisibility="Auto">
+                    <Grid x:Name="SeatGrid">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="60"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- rows added dynamically in code-behind -->
+                    </Grid>
+                </ScrollViewer>
+
+                <!-- Reserve form -->
+                <StackPanel DockPanel.Dock="Top" Margin="0,10,0,0">
+                    <Label Content="Client Name:" FontWeight="Bold"/>
+                    <TextBox x:Name="ClientNameField" Margin="0,4"/>
+                    <Button Content="Reserve Selected Seats"
+                            Click="ReserveButton_Click"
+                            Height="35" Background="#DDFFDD"/>
+                </StackPanel>
+
+                <DockPanel/>
+            </DockPanel>
+
+            <!-- RIGHT: reservations list -->
+            <DockPanel Grid.Column="1">
+                <Label DockPanel.Dock="Top" Content="All Reservations" FontWeight="Bold"/>
+                <Button DockPanel.Dock="Bottom" Content="Cancel Selected Reservation"
+                        Click="CancelButton_Click"
+                        Height="35" Margin="0,6,0,0" Background="#FFDDDD"/>
+                <ListBox x:Name="ResList">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding ClientName}" FontWeight="Bold" Margin="0,0,8,0"/>
+                                <TextBlock Text="|" Margin="0,0,8,0" Foreground="Gray"/>
+                                <TextBlock Text="{Binding ReservationTime}" Margin="0,0,8,0"/>
+                                <TextBlock Text="|" Margin="0,0,8,0" Foreground="Gray"/>
+                                <TextBlock Text="seats: " Foreground="Gray"/>
+                                <ItemsControl ItemsSource="{Binding SeatNumbers}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding}" Margin="0,0,3,0"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Text="| by: " Foreground="Gray" Margin="4,0,0,0"/>
+                                <TextBlock Text="{Binding UserUsername}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
+</Window>

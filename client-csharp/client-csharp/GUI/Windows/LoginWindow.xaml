@@ -1,0 +1,33 @@
+﻿<Window x:Class="Client.GUI.Windows.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Login" Height="220" Width="380"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="0" Content="Username:" VerticalAlignment="Center"/>
+        <TextBox x:Name="UsernameField" Grid.Row="0" Grid.Column="1" Margin="0,5"/>
+
+        <Label Grid.Row="1" Grid.Column="0" Content="Password:" VerticalAlignment="Center"/>
+        <PasswordBox x:Name="PasswordField" Grid.Row="1" Grid.Column="1" Margin="0,5"/>
+
+        <Label x:Name="ErrorLabel" Grid.Row="2" Grid.ColumnSpan="2"
+               Foreground="Red" HorizontalAlignment="Center" Margin="0,5"/>
+
+        <Button Grid.Row="3" Grid.ColumnSpan="2" Content="Login"
+                Click="LoginButton_Click"
+                Height="35" Margin="0,10,0,0"/>
+    </Grid>
+</Window>
